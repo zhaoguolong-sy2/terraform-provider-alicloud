@@ -305,6 +305,14 @@ func TestAccAlicloudDBInstancesDataSourcePostgreSQLSSL(t *testing.T) {
 			"instances.0.server_ca_url":               "",
 			"instances.0.server_cert":                 "",
 			"instances.0.server_key":                  "",
+			"instances.0.creator":                     CHECKSET,
+			"instances.0.delete_date":                 CHECKSET,
+			"instances.0.description":                 CHECKSET,
+			"instances.0.encryption_key":              CHECKSET,
+			"instances.0.encryption_key_status":       CHECKSET,
+			"instances.0.key_usage":                   CHECKSET,
+			"instances.0.material_expire_time":        CHECKSET,
+			"instances.0.origin":                      CHECKSET,
 		}
 	}
 
