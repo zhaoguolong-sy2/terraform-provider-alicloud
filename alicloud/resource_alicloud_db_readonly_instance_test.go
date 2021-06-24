@@ -64,6 +64,7 @@ func TestAccAlicloudDBReadonlyInstance_update(t *testing.T) {
 					testAccCheck(nil),
 				),
 			},
+			//
 			{
 				ResourceName:      resourceId,
 				ImportState:       true,
