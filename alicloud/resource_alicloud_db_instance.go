@@ -341,6 +341,7 @@ func resourceAlicloudDBInstance() *schema.Resource {
 				DiffSuppressFunc: kernelVersionDiffSuppressFunc,
 			},
 			"switch_time": {
+				// gogogo
 				Type:             schema.TypeString,
 				Optional:         true,
 				DiffSuppressFunc: kernelVersionDiffSuppressFunc,
