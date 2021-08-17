@@ -31,6 +31,7 @@ func TestAccAlicloudCenTransitRouterPeerAttachment_basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
 			testAccPreCheck(t)
+			testAccPreCheckWithRegions(t, true, connectivity.CenTRSupportRegions)
 		},
 
 		IDRefreshName:     resourceId,
@@ -256,14 +257,14 @@ resource "alicloud_cen_bandwidth_package_attachment" "default" {
 
 resource "alicloud_cen_transit_router" "default_0" {
   provider = alicloud.cn
-  cen_id = alicloud_cen_instance.default.id
-  depends_on = [alicloud_cen_bandwidth_package_attachment.default]
+  cen_id = alicloud_cen_bandwidth_package_attachment.default.instance_id
+  transit_router_name = "${var.name}-00"
 }
 
 resource "alicloud_cen_transit_router" "default_1" {
   provider = alicloud.bj
-  cen_id = alicloud_cen_instance.default.id
-  depends_on = [alicloud_cen_transit_router.default_0]
+  cen_id = alicloud_cen_transit_router.default_0.cen_id
+  transit_router_name = "${var.name}-01"
 }
 
 `, name)

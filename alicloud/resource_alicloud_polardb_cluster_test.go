@@ -128,7 +128,6 @@ func TestAccAlicloudPolarDBClusterUpdate(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
 			testAccPreCheck(t)
-			testAccPreCheckWithNoDefaultVpc(t)
 		},
 
 		// module name
@@ -222,6 +221,7 @@ func TestAccAlicloudPolarDBClusterUpdate(t *testing.T) {
 					testAccCheckKeyValueInMapsForPolarDB(ips, "security ip", "security_ips", "10.168.1.12,100.69.7.112"),
 					testAccCheck(map[string]string{
 						"connection_string": REGEXMATCH + clusterConnectionStringRegexp,
+						"security_ips.#":    "2",
 					}),
 				),
 			},
@@ -278,9 +278,10 @@ func TestAccAlicloudPolarDBClusterUpdate(t *testing.T) {
 				}),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheck(map[string]string{
-						"description":   "tf-testaccPolarDBClusterUpdate1",
-						"maintain_time": "02:00Z-03:00Z",
-						"db_node_class": CHECKSET,
+						"description":    "tf-testaccPolarDBClusterUpdate1",
+						"maintain_time":  "02:00Z-03:00Z",
+						"db_node_class":  CHECKSET,
+						"security_ips.#": "2",
 					}),
 					testAccCheckKeyValueInMapsForPolarDB(ips, "security ip", "security_ips", "10.168.1.13,100.69.7.113"),
 				),
@@ -336,7 +337,6 @@ func TestAccAlicloudPolarDBClusterMulti(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
 			testAccPreCheck(t)
-			testAccPreCheckWithNoDefaultVpc(t)
 		},
 
 		// module name

@@ -153,7 +153,7 @@ func testSweepNetworkAcl(region string) error {
 	return nil
 }
 
-func TestAccAlicloudNetworkAcl_basic(t *testing.T) {
+func TestAccAlicloudVpcNetworkAcl_basic(t *testing.T) {
 	var v map[string]interface{}
 	resourceId := "alicloud_network_acl.default"
 	ra := resourceAttrInit(resourceId, AlicloudNetworkAclMap0)
@@ -176,11 +176,13 @@ func TestAccAlicloudNetworkAcl_basic(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: testAccConfig(map[string]interface{}{
-					"vpc_id": "${alicloud_vpc.default.id}",
+					"vpc_id":           "${alicloud_vpc.default.id}",
+					"network_acl_name": name,
 				}),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheck(map[string]string{
-						"vpc_id": CHECKSET,
+						"vpc_id":           CHECKSET,
+						"network_acl_name": name,
 					}),
 				),
 			},

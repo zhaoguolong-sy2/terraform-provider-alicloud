@@ -23,7 +23,6 @@ var securityCredURL = "http://100.100.100.200/latest/meta-data/ram/security-cred
 
 // Config of aliyun
 type Config struct {
-	SourceIp             string
 	AccessKey            string
 	SecretKey            string
 	EcsRoleName          string
@@ -35,6 +34,8 @@ type Config struct {
 	Protocol             string
 	ClientReadTimeout    int
 	ClientConnectTimeout int
+	SourceIp             string
+	SecurityTransport    string
 
 	RamRoleArn               string
 	RamRoleSessionName       string
@@ -85,47 +86,63 @@ type Config struct {
 	AdbEndpoint              string
 	MaxComputeEndpoint       string
 
-	edasEndpoint            string
-	SkipRegionValidation    bool
-	ConfigurationSource     string
-	CbnEndpoint             string
-	DmsEnterpriseEndpoint   string
-	WafOpenapiEndpoint      string
-	ResourcemanagerEndpoint string
-	BssopenapiEndpoint      string
-	AlidnsEndpoint          string
-	CassandraEndpoint       string
-	EciEndpoint             string
-	OosEndpoint             string
-	DcdnEndpoint            string
-	MseEndpoint             string
-	ActiontrailEndpoint     string
-	ConfigEndpoint          string
-	FnfEndpoint             string
-	RosEndpoint             string
-	PrivatelinkEndpoint     string
-	MaxcomputeEndpoint      string
-	ResourcesharingEndpoint string
-	GaEndpoint              string
-	HitsdbEndpoint          string
-	BrainIndustrialEndpoint string
-	EipanycastEndpoint      string
-	ImsEndpoint             string
-	QuotasEndpoint          string
-	SgwEndpoint             string
-	ScdnEndpoint            string
-	DmEndpoint              string
-	EventbridgeEndpoint     string
-	OnsproxyEndpoint        string
-	CdsEndpoint             string
-	HbrEndpoint             string
-	ArmsEndpoint            string
-	CloudfwEndpoint         string
-	ServerlessEndpoint      string
-	AlbEndpoint             string
-	RedisaEndpoint          string
-	GwsecdEndpoint          string
-	CloudphoneEndpoint      string
+	edasEndpoint                string
+	SkipRegionValidation        bool
+	ConfigurationSource         string
+	CbnEndpoint                 string
+	DmsEnterpriseEndpoint       string
+	WafOpenapiEndpoint          string
+	ResourcemanagerEndpoint     string
+	BssopenapiEndpoint          string
+	AlidnsEndpoint              string
+	CassandraEndpoint           string
+	EciEndpoint                 string
+	OosEndpoint                 string
+	DcdnEndpoint                string
+	MseEndpoint                 string
+	ActiontrailEndpoint         string
+	ConfigEndpoint              string
+	FnfEndpoint                 string
+	RosEndpoint                 string
+	PrivatelinkEndpoint         string
+	MaxcomputeEndpoint          string
+	ResourcesharingEndpoint     string
+	GaEndpoint                  string
+	HitsdbEndpoint              string
+	BrainIndustrialEndpoint     string
+	EipanycastEndpoint          string
+	ImsEndpoint                 string
+	QuotasEndpoint              string
+	SgwEndpoint                 string
+	ScdnEndpoint                string
+	DmEndpoint                  string
+	EventbridgeEndpoint         string
+	OnsproxyEndpoint            string
+	CdsEndpoint                 string
+	HbrEndpoint                 string
+	ArmsEndpoint                string
+	CloudfwEndpoint             string
+	ServerlessEndpoint          string
+	AlbEndpoint                 string
+	RedisaEndpoint              string
+	GwsecdEndpoint              string
+	CloudphoneEndpoint          string
+	DataworkspublicEndpoint     string
+	HcsSgwEndpoint              string
+	CddcEndpoint                string
+	MscopensubscriptionEndpoint string
+	SddpEndpoint                string
+	BastionhostEndpoint         string
+	SasEndpoint                 string
+	AlidfsEndpoint              string
+	EhpcEndpoint                string
+	EnsEndpoint                 string
+	IotEndpoint                 string
+	ImmEndpoint                 string
+	ClickhouseEndpoint          string
+	DtsEndpoint                 string
+	DgEndpoint                  string
+	CloudssoEndpoint            string
 }
 
 func (c *Config) loadAndValidate() error {

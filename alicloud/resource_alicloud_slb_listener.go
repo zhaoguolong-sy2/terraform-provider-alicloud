@@ -83,7 +83,7 @@ func resourceAliyunSlbListener() *schema.Resource {
 			},
 			"scheduler": {
 				Type:         schema.TypeString,
-				ValidateFunc: validation.StringInSlice([]string{"wrr", "wlc", "rr", "sch"}, false),
+				ValidateFunc: validation.StringInSlice([]string{"wrr", "wlc", "rr", "sch", "tch", "qch"}, false),
 				Optional:     true,
 				Default:      WRRScheduler,
 			},
@@ -851,6 +851,10 @@ func buildListenerCommonArgs(d *schema.ResourceData, meta interface{}) (*request
 	// description
 	if description, ok := d.GetOk("description"); ok && description.(string) != "" {
 		request.QueryParams["Description"] = description.(string)
+	}
+	// scheduler
+	if scheduler, ok := d.GetOk("scheduler"); ok && scheduler.(string) != "" {
+		request.QueryParams["Scheduler"] = scheduler.(string)
 	}
 
 	return request, nil

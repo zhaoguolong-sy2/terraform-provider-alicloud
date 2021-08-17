@@ -398,6 +398,34 @@ func convertMaptoJsonString(m map[string]interface{}) (string, error) {
 	}
 }
 
+func convertListMapToJsonString(configured []map[string]interface{}) (string, error) {
+	if len(configured) < 1 {
+		return "[]", nil
+	}
+
+	result := "["
+	for i, m := range configured {
+		if m == nil {
+			continue
+		}
+
+		sm := make(map[string]interface{}, len(m))
+		for k, v := range m {
+			sm[k] = v
+		}
+
+		item, err := json.Marshal(sm)
+		if err == nil {
+			result += string(item)
+			if i < len(configured)-1 {
+				result += ","
+			}
+		}
+	}
+	result += "]"
+	return result, nil
+}
+
 func convertMapFloat64ToJsonString(m map[string]interface{}) (string, error) {
 	sm := make(map[string]json.Number, len(m))
 
@@ -939,7 +967,7 @@ func checkWaitForReady(object interface{}, conditions map[string]interface{}) (b
 	return true, values, nil
 }
 
-// When using teadsl, we need to convert float, int64 and int32 to int for comparison.
+// When  using teadsl, we need to convert float, int64 and int32 to int for comparison.
 func formatInt(src interface{}) int {
 	if src == nil {
 		return 0
@@ -980,4 +1008,27 @@ func convertArrayObjectToJsonString(src interface{}) (string, error) {
 		return "", err
 	}
 	return string(res), nil
+}
+
+func convertArrayToString(src interface{}, sep string) string {
+	if src == nil {
+		return ""
+	}
+	items := make([]string, 0)
+	for _, v := range src.([]interface{}) {
+		items = append(items, fmt.Sprint(v))
+	}
+	return strings.Join(items, sep)
+}
+
+func splitMultiZoneId(id string) (ids []string) {
+	if !(strings.Contains(id, MULTI_IZ_SYMBOL) || strings.Contains(id, "(")) {
+		return
+	}
+	firstIndex := strings.Index(id, MULTI_IZ_SYMBOL)
+	secondIndex := strings.Index(id, "(")
+	for _, p := range strings.Split(id[secondIndex+1:len(id)-1], COMMA_SEPARATED) {
+		ids = append(ids, id[:firstIndex]+string(p))
+	}
+	return
 }

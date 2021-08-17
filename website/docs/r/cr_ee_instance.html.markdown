@@ -41,6 +41,9 @@ The following arguments are supported:
 * `instance_type` - (Required, String) Type of Container Registry Enterprise Edition instance. Valid values: `Basic`, `Standard`, `Advanced`.
 * `instance_name` - (Required, String) Name of Container Registry Enterprise Edition instance.
 * `custom_oss_bucket` - (Optional, String) Name of your customized oss bucket. Use this bucket as instance storage if set.
+* `password`- (Optional, Sensitive, Available in 1.132.0) The password of the Instance. The password is a string of 8 to 30 characters and must contain uppercase letters, lowercase letters, and numbers.
+* `kms_encrypted_password` - (Optional, Available in 1.132.0+) An KMS encrypts password used to an instance. If the `password` is filled in, this field will be ignored.
+* `kms_encryption_context` - (Optional, MapString, Available in 1.132.0+) An KMS encryption context used to decrypt `kms_encrypted_password` before creating or updating instance with `kms_encrypted_password`. See [Encryption Context](https://www.alibabacloud.com/help/doc-detail/42975.htm). It is valid when `kms_encrypted_password` is set.
 
 ## Attributes Reference
 
@@ -50,6 +53,13 @@ The following attributes are exported:
 * `status` - Status of Container Registry Enterprise Edition instance.
 * `created_time` - Time of Container Registry Enterprise Edition instance creation.
 * `end_time` - Time of Container Registry Enterprise Edition instance expiration.
+
+### Timeouts
+
+The `timeouts` block allows you to specify [timeouts](https://www.terraform.io/docs/configuration-0-11/resources.html#timeouts) for certain actions:
+
+* `create` - (Defaults to 10 min) Used when create the Instance.
+
 
 ## Import
 

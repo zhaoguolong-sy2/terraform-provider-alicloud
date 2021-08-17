@@ -44,11 +44,7 @@ func SkipTestAccAlicloudPrivatelinkVpcEndpointServiceResourcesDataSource(t *test
 		fakeMapFunc:  fakePrivatelinkVpcEndpointServiceResourcesMapFunc,
 	}
 
-	preCheck := func() {
-		testAccPreCheckWithNoDefaultVpc(t)
-	}
-
-	PrivatelinkVpcEndpointServiceResourcesInfo.dataSourceTestCheckWithPreCheck(t, 0, preCheck, serviceIdConf)
+	PrivatelinkVpcEndpointServiceResourcesInfo.dataSourceTestCheck(t, 0, serviceIdConf)
 }
 
 func dataSourcePrivatelinkVpcEndpointServiceResourcesDependence(name string) string {
@@ -57,7 +53,7 @@ func dataSourcePrivatelinkVpcEndpointServiceResourcesDependence(name string) str
 	 name_regex = "default-NODELETING"
 	}
 	resource "alicloud_security_group" "default" {
-	 name = "tftest"
+	 name = "tf-testAcc-for-privatelink"
 	 description = "privatelink test security group"
 	 vpc_id = data.alicloud_vpcs.default.ids.0
 	}

@@ -39,9 +39,9 @@ func dataSourceAlicloudEventBridgeServiceRead(d *schema.ResourceData, meta inter
 	action := "CreateInstance"
 	request := map[string]interface{}{
 		"ProductCode":      "eventbridge",
-		"ProductType":      "eventbridge_post_public_cn",
 		"SubscriptionType": "PayAsYouGo",
 	}
+
 	conn, err := meta.(*connectivity.AliyunClient).NewBssopenapiClient()
 	if err != nil {
 		return WrapError(err)

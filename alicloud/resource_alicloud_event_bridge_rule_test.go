@@ -24,6 +24,7 @@ func TestAccAlicloudEventBridgeRule_basic0(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
 			testAccPreCheck(t)
+			testAccPreCheckWithRegions(t, true, connectivity.EventBridgeSupportRegions)
 		},
 		IDRefreshName: resourceId,
 		Providers:     testAccProviders,
@@ -43,14 +44,11 @@ func TestAccAlicloudEventBridgeRule_basic0(t *testing.T) {
 								{
 									"form":         "CONSTANT",
 									"resource_key": "queue",
-									"template":     "{abc}",
 									"value":        "tf-testaccEbRule",
 								},
 								{
 									"form":         "ORIGINAL",
 									"resource_key": "Body",
-									"template":     "{def}",
-									"value":        "tf-testAcc",
 								},
 							},
 						},
@@ -76,14 +74,69 @@ func TestAccAlicloudEventBridgeRule_basic0(t *testing.T) {
 								{
 									"form":         "CONSTANT",
 									"resource_key": "queue",
-									"template":     "{abc}",
 									"value":        "tf-testaccEbRule",
 								},
 								{
-									"form":         "ORIGINAL",
+									"form":         "JSONPATH",
 									"resource_key": "Body",
-									"template":     "{def}",
+									"value":        "$.data.name",
+								},
+							},
+						},
+					},
+				}),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheck(map[string]string{
+						"targets.#": "1",
+					}),
+				),
+			},
+			{
+				Config: testAccConfig(map[string]interface{}{
+					"targets": []map[string]interface{}{
+						{
+							"endpoint":  "${local.mns_endpoint_b}",
+							"target_id": "tf-test1",
+							"type":      "acs.mns.queue",
+							"param_list": []map[string]interface{}{
+								{
+									"form":         "CONSTANT",
+									"resource_key": "queue",
+									"value":        "tf-testaccEbRule",
+								},
+								{
+									"form":         "CONSTANT",
+									"resource_key": "Body",
 									"value":        "tf-testAcc",
+								},
+							},
+						},
+					},
+				}),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheck(map[string]string{
+						"targets.#": "1",
+					}),
+				),
+			},
+			{
+				Config: testAccConfig(map[string]interface{}{
+					"targets": []map[string]interface{}{
+						{
+							"endpoint":  "${local.mns_endpoint_b}",
+							"target_id": "tf-test1",
+							"type":      "acs.mns.queue",
+							"param_list": []map[string]interface{}{
+								{
+									"form":         "CONSTANT",
+									"resource_key": "queue",
+									"value":        "tf-testaccEbRule",
+								},
+								{
+									"form":         "TEMPLATE",
+									"resource_key": "Body",
+									"template":     "This is $${v1}",
+									"value":        `{\n \"v1\":\"$.source\" \n}`,
 								},
 							},
 						},
@@ -148,14 +201,11 @@ func TestAccAlicloudEventBridgeRule_basic0(t *testing.T) {
 								{
 									"form":         "CONSTANT",
 									"resource_key": "queue",
-									"template":     "{abc}",
 									"value":        "tf-testaccEbRule",
 								},
 								{
 									"form":         "ORIGINAL",
 									"resource_key": "Body",
-									"template":     "{def}",
-									"value":        "tf-testAcc",
 								},
 							},
 						},

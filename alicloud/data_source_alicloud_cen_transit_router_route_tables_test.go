@@ -5,6 +5,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/aliyun/terraform-provider-alicloud/alicloud/connectivity"
+
 	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
 )
 
@@ -88,7 +90,10 @@ func TestAccAlicloudCenTransitRouterRouteTablesDataSource(t *testing.T) {
 		existMapFunc: existAlicloudCenTransitRouterRouteTablesDataSourceNameMapFunc,
 		fakeMapFunc:  fakeAlicloudCenTransitRouterRouteTablesDataSourceNameMapFunc,
 	}
-	alicloudCenTransitRouterRouteTablesCheckInfo.dataSourceTestCheck(t, rand, idsConf, transitRouterRouteTableStatusConf, nameRegexConf, statusConf, allConf)
+	preCheck := func() {
+		testAccPreCheckWithRegions(t, true, connectivity.CenTRSupportRegions)
+	}
+	alicloudCenTransitRouterRouteTablesCheckInfo.dataSourceTestCheckWithPreCheck(t, rand, preCheck, idsConf, transitRouterRouteTableStatusConf, nameRegexConf, statusConf, allConf)
 }
 func testAccCheckAlicloudCenTransitRouterRouteTablesDataSourceName(rand int, attrMap map[string]string) string {
 	var pairs []string

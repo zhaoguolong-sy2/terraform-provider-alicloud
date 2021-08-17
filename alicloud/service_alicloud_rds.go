@@ -235,6 +235,34 @@ func (s *RdsService) DescribeParameters(id string) (map[string]interface{}, erro
 	return response, err
 }
 
+func (s *RdsService) SetTimeZone(d *schema.ResourceData) error {
+	targetParameterName := ""
+	engine := d.Get("engine")
+	if engine == string(MySQL) {
+		targetParameterName = "default_time_zone"
+	} else if engine == string(PostgreSQL) {
+		targetParameterName = "timezone"
+	}
+
+	if targetParameterName != "" {
+		paramsRes, err := s.DescribeParameters(d.Id())
+		if err != nil {
+			return WrapError(err)
+		}
+		parameters := paramsRes["RunningParameters"].(map[string]interface{})["DBInstanceParameter"].([]interface{})
+		for _, item := range parameters {
+			item := item.(map[string]interface{})
+			parameterName := item["ParameterName"]
+
+			if parameterName == targetParameterName {
+				d.Set("db_time_zone", item["ParameterValue"])
+				break
+			}
+		}
+	}
+	return nil
+}
+
 func (s *RdsService) RefreshParameters(d *schema.ResourceData, attribute string) error {
 	var param []map[string]interface{}
 	documented, ok := d.GetOk(attribute)
@@ -763,6 +791,29 @@ func (s *RdsService) DescribeDBSecurityIps(instanceId string) ([]interface{}, er
 	}
 	addDebug(action, response, request)
 	return response["Items"].(map[string]interface{})["DBInstanceIPArray"].([]interface{}), nil
+}
+
+func (s *RdsService) DescribeParameterTemplates(instanceId, engine, engineVersion string) ([]interface{}, error) {
+	action := "DescribeParameterTemplates"
+	request := map[string]interface{}{
+		"RegionId":      s.client.RegionId,
+		"DBInstanceId":  instanceId,
+		"Engine":        engine,
+		"EngineVersion": engineVersion,
+		"SourceIp":      s.client.SourceIp,
+	}
+	conn, err := s.client.NewRdsClient()
+	if err != nil {
+		return nil, WrapError(err)
+	}
+	runtime := util.RuntimeOptions{}
+	runtime.SetAutoretry(true)
+	response, err := conn.DoRequest(StringPointer(action), nil, StringPointer("POST"), StringPointer("2014-08-15"), StringPointer("AK"), nil, request, &runtime)
+	if err != nil {
+		return nil, WrapErrorf(err, DefaultErrorMsg, instanceId, action, AlibabaCloudSdkGoERROR)
+	}
+	addDebug(action, response, request)
+	return response["Parameters"].(map[string]interface{})["TemplateRecord"].([]interface{}), nil
 }
 
 func (s *RdsService) GetSecurityIps(instanceId string) ([]string, error) {
@@ -1388,25 +1439,28 @@ func (s *RdsService) flattenDBSecurityIPs(list []interface{}) []map[string]inter
 
 func (s *RdsService) setInstanceTags(d *schema.ResourceData) error {
 	if d.HasChange("tags") {
-		oraw, nraw := d.GetChange("tags")
-		o := oraw.(map[string]interface{})
-		n := nraw.(map[string]interface{})
-		remove, add := diffRdsTags(o, n)
-
-		if len(remove) > 0 {
-			conn, err := s.client.NewRdsClient()
-			if err != nil {
-				return WrapError(err)
+		added, removed := parsingTags(d)
+		conn, err := s.client.NewRdsClient()
+		if err != nil {
+			return WrapError(err)
+		}
+		removedTagKeys := make([]string, 0)
+		for _, v := range removed {
+			if !ignoredTags(v, "") {
+				removedTagKeys = append(removedTagKeys, v)
 			}
-			action := "UntagResources"
+		}
+		if len(removedTagKeys) > 0 {
+			action := "UnTagResources"
 			request := map[string]interface{}{
-				"ResourceId":   &[]string{d.Id()},
-				"ResourceType": "INSTANCE",
-				"TagKey":       &remove,
 				"RegionId":     s.client.RegionId,
+				"ResourceType": "INSTANCE",
+				"ResourceId.1": d.Id(),
 				"SourceIp":     s.client.SourceIp,
 			}
-
+			for i, key := range removedTagKeys {
+				request[fmt.Sprintf("TagKey.%d", i+1)] = key
+			}
 			wait := incrementalWait(1*time.Second, 2*time.Second)
 			runtime := util.RuntimeOptions{}
 			err = resource.Retry(10*time.Minute, func() *resource.RetryError {
@@ -1426,19 +1480,20 @@ func (s *RdsService) setInstanceTags(d *schema.ResourceData) error {
 			}
 		}
 
-		if len(add) > 0 {
-			conn, err := s.client.NewRdsClient()
-			if err != nil {
-				return WrapError(err)
-			}
+		if len(added) > 0 {
 			action := "TagResources"
 			request := map[string]interface{}{
-				"ResourceId":   &[]string{d.Id()},
-				"Tag":          &add,
-				"ResourceType": "INSTANCE",
 				"RegionId":     s.client.RegionId,
-				"SourceIp":     s.client.SourceIp,
+				"ResourceType": "INSTANCE",
+				"ResourceId.1": d.Id(),
 			}
+			count := 1
+			for key, value := range added {
+				request[fmt.Sprintf("Tag.%d.Key", count)] = key
+				request[fmt.Sprintf("Tag.%d.Value", count)] = value
+				count++
+			}
+
 			wait := incrementalWait(1*time.Second, 2*time.Second)
 			runtime := util.RuntimeOptions{}
 			err = resource.Retry(10*time.Minute, func() *resource.RetryError {

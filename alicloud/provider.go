@@ -29,12 +29,6 @@ import (
 func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
-			"source_ip": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("ALICLOUD_SOURCE_IP", os.Getenv("ALICLOUD_SOURCE_IP")),
-				Description: descriptions["source_ip"],
-			},
 			"access_key": {
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -136,6 +130,18 @@ func Provider() terraform.ResourceProvider {
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("CLIENT_CONNECT_TIMEOUT", 30000),
 				Description: descriptions["client_connect_timeout"],
+			},
+			"source_ip": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("ALICLOUD_SOURCE_IP", os.Getenv("ALICLOUD_SOURCE_IP")),
+				Description: descriptions["source_ip"],
+			},
+			"security_transport": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("ALICLOUD_SECURITY_TRANSPORT", os.Getenv("ALICLOUD_SECURITY_TRANSPORT")),
+				Description: descriptions["security_transport"],
 			},
 		},
 		DataSourcesMap: map[string]*schema.Resource{
@@ -291,6 +297,7 @@ func Provider() terraform.ResourceProvider {
 			"alicloud_sag_acls":                                    dataSourceAlicloudSagAcls(),
 			"alicloud_yundun_dbaudit_instance":                     dataSourceAlicloudDbauditInstances(),
 			"alicloud_yundun_bastionhost_instances":                dataSourceAlicloudBastionhostInstances(),
+			"alicloud_bastionhost_instances":                       dataSourceAlicloudBastionhostInstances(),
 			"alicloud_market_product":                              dataSourceAlicloudProduct(),
 			"alicloud_market_products":                             dataSourceAlicloudProducts(),
 			"alicloud_polardb_clusters":                            dataSourceAlicloudPolarDBClusters(),
@@ -461,7 +468,55 @@ func Provider() terraform.ResourceProvider {
 			"alicloud_event_bridge_event_sources":                  dataSourceAlicloudEventBridgeEventSources(),
 			"alicloud_ecd_policy_groups":                           dataSourceAlicloudEcdPolicyGroups(),
 			"alicloud_ecp_key_pairs":                               dataSourceAlicloudEcpKeyPairs(),
+			"alicloud_hbr_ecs_backup_plans":                        dataSourceAlicloudHbrEcsBackupPlans(),
+			"alicloud_hbr_nas_backup_plans":                        dataSourceAlicloudHbrNasBackupPlans(),
 			"alicloud_hbr_oss_backup_plans":                        dataSourceAlicloudHbrOssBackupPlans(),
+			"alicloud_scdn_domains":                                dataSourceAlicloudScdnDomains(),
+			"alicloud_alb_server_groups":                           dataSourceAlicloudAlbServerGroups(),
+			"alicloud_data_works_folders":                          dataSourceAlicloudDataWorksFolders(),
+			"alicloud_arms_alert_contact_groups":                   dataSourceAlicloudArmsAlertContactGroups(),
+			"alicloud_express_connect_access_points":               dataSourceAlicloudExpressConnectAccessPoints(),
+			"alicloud_cloud_storage_gateway_gateways":              dataSourceAlicloudCloudStorageGatewayGateways(),
+			"alicloud_lindorm_instances":                           dataSourceAlicloudLindormInstances(),
+			"alicloud_express_connect_physical_connection_service": dataSourceAlicloudExpressConnectPhysicalConnectionService(),
+			"alicloud_cddc_dedicated_host_groups":                  dataSourceAlicloudCddcDedicatedHostGroups(),
+			"alicloud_hbr_ecs_backup_clients":                      dataSourceAlicloudHbrEcsBackupClients(),
+			"alicloud_msc_sub_contacts":                            dataSourceAlicloudMscSubContacts(),
+			"alicloud_express_connect_physical_connections":        dataSourceAlicloudExpressConnectPhysicalConnections(),
+			"alicloud_alb_load_balancers":                          dataSourceAlicloudAlbLoadBalancers(),
+			"alicloud_alb_zones":                                   dataSourceAlicloudAlbZones(),
+			"alicloud_sddp_rules":                                  dataSourceAlicloudSddpRules(),
+			"alicloud_bastionhost_user_groups":                     dataSourceAlicloudBastionhostUserGroups(),
+			"alicloud_security_center_groups":                      dataSourceAlicloudSecurityCenterGroups(),
+			"alicloud_alb_acls":                                    dataSourceAlicloudAlbAcls(),
+			"alicloud_hbr_snapshots":                               dataSourceAlicloudHbrSnapshots(),
+			"alicloud_bastionhost_users":                           dataSourceAlicloudBastionhostUsers(),
+			"alicloud_dfs_access_groups":                           dataSourceAlicloudDfsAccessGroups(),
+			"alicloud_ehpc_job_templates":                          dataSourceAlicloudEhpcJobTemplates(),
+			"alicloud_sddp_configs":                                dataSourceAlicloudSddpConfigs(),
+			"alicloud_hbr_restore_jobs":                            dataSourceAlicloudHbrRestoreJobs(),
+			"alicloud_alb_listeners":                               dataSourceAlicloudAlbListeners(),
+			"alicloud_ens_key_pairs":                               dataSourceAlicloudEnsKeyPairs(),
+			"alicloud_sae_applications":                            dataSourceAlicloudSaeApplications(),
+			"alicloud_alb_rules":                                   dataSourceAlicloudAlbRules(),
+			"alicloud_cms_metric_rule_templates":                   dataSourceAlicloudCmsMetricRuleTemplates(),
+			"alicloud_iot_device_groups":                           dataSourceAlicloudIotDeviceGroups(),
+			"alicloud_express_connect_virtual_border_routers":      dataSourceAlicloudExpressConnectVirtualBorderRouters(),
+			"alicloud_imm_projects":                                dataSourceAlicloudImmProjects(),
+			"alicloud_click_house_db_clusters":                     dataSourceAlicloudClickHouseDbClusters(),
+			"alicloud_direct_mail_domains":                         dataSourceAlicloudDirectMailDomains(),
+			"alicloud_bastionhost_host_groups":                     dataSourceAlicloudBastionhostHostGroups(),
+			"alicloud_vpc_dhcp_options_sets":                       dataSourceAlicloudVpcDhcpOptionsSets(),
+			"alicloud_alb_health_check_templates":                  dataSourceAlicloudAlbHealthCheckTemplates(),
+			"alicloud_cdn_real_time_log_deliveries":                dataSourceAlicloudCdnRealTimeLogDeliveries(),
+			"alicloud_click_house_accounts":                        dataSourceAlicloudClickHouseAccounts(),
+			"alicloud_direct_mail_mail_addresses":                  dataSourceAlicloudDirectMailMailAddresses(),
+			"alicloud_database_gateway_gateways":                   dataSourceAlicloudDatabaseGatewayGateways(),
+			"alicloud_bastionhost_hosts":                           dataSourceAlicloudBastionhostHosts(),
+			"alicloud_amqp_bindings":                               dataSourceAlicloudAmqpBindings(),
+			"alicloud_slb_tls_cipher_policies":                     dataSourceAlicloudSlbTlsCipherPolicies(),
+			"alicloud_cloud_sso_directories":                       dataSourceAlicloudCloudSsoDirectories(),
+			"alicloud_bastionhost_host_accounts":                   dataSourceAlicloudBastionhostHostAccounts(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"alicloud_instance":                           resourceAliyunInstance(),
@@ -671,6 +726,7 @@ func Provider() terraform.ResourceProvider {
 			"alicloud_sag_client_user":                            resourceAlicloudSagClientUser(),
 			"alicloud_yundun_dbaudit_instance":                    resourceAlicloudDbauditInstance(),
 			"alicloud_yundun_bastionhost_instance":                resourceAlicloudBastionhostInstance(),
+			"alicloud_bastionhost_instance":                       resourceAlicloudBastionhostInstance(),
 			"alicloud_polardb_cluster":                            resourceAlicloudPolarDBCluster(),
 			"alicloud_polardb_backup_policy":                      resourceAlicloudPolarDBBackupPolicy(),
 			"alicloud_polardb_database":                           resourceAlicloudPolarDBDatabase(),
@@ -826,9 +882,57 @@ func Provider() terraform.ResourceProvider {
 			"alicloud_cloud_firewall_control_policy_order":        resourceAlicloudCloudFirewallControlPolicyOrder(),
 			"alicloud_ecd_policy_group":                           resourceAlicloudEcdPolicyGroup(),
 			"alicloud_ecp_key_pair":                               resourceAlicloudEcpKeyPair(),
+			"alicloud_hbr_ecs_backup_plan":                        resourceAlicloudHbrEcsBackupPlan(),
+			"alicloud_hbr_nas_backup_plan":                        resourceAlicloudHbrNasBackupPlan(),
 			"alicloud_hbr_oss_backup_plan":                        resourceAlicloudHbrOssBackupPlan(),
+			"alicloud_scdn_domain":                                resourceAlicloudScdnDomain(),
+			"alicloud_alb_server_group":                           resourceAlicloudAlbServerGroup(),
+			"alicloud_data_works_folder":                          resourceAlicloudDataWorksFolder(),
+			"alicloud_arms_alert_contact_group":                   resourceAlicloudArmsAlertContactGroup(),
+			"alicloud_dcdn_domain_config":                         resourceAlicloudDcdnDomainConfig(),
+			"alicloud_scdn_domain_config":                         resourceAlicloudScdnDomainConfig(),
+			"alicloud_cloud_storage_gateway_gateway":              resourceAlicloudCloudStorageGatewayGateway(),
+			"alicloud_lindorm_instance":                           resourceAlicloudLindormInstance(),
+			"alicloud_cddc_dedicated_host_group":                  resourceAlicloudCddcDedicatedHostGroup(),
+			"alicloud_hbr_ecs_backup_client":                      resourceAlicloudHbrEcsBackupClient(),
+			"alicloud_msc_sub_contact":                            resourceAlicloudMscSubContact(),
+			"alicloud_express_connect_physical_connection":        resourceAlicloudExpressConnectPhysicalConnection(),
+			"alicloud_alb_load_balancer":                          resourceAlicloudAlbLoadBalancer(),
+			"alicloud_sddp_rule":                                  resourceAlicloudSddpRule(),
+			"alicloud_bastionhost_user_group":                     resourceAlicloudBastionhostUserGroup(),
+			"alicloud_security_center_group":                      resourceAlicloudSecurityCenterGroup(),
+			"alicloud_alb_acl":                                    resourceAlicloudAlbAcl(),
+			"alicloud_bastionhost_user":                           resourceAlicloudBastionhostUser(),
+			"alicloud_dfs_access_group":                           resourceAlicloudDfsAccessGroup(),
+			"alicloud_ehpc_job_template":                          resourceAlicloudEhpcJobTemplate(),
+			"alicloud_sddp_config":                                resourceAlicloudSddpConfig(),
+			"alicloud_hbr_restore_job":                            resourceAlicloudHbrRestoreJob(),
+			"alicloud_alb_listener":                               resourceAlicloudAlbListener(),
+			"alicloud_ens_key_pair":                               resourceAlicloudEnsKeyPair(),
+			"alicloud_sae_application":                            resourceAlicloudSaeApplication(),
+			"alicloud_alb_rule":                                   resourceAlicloudAlbRule(),
+			"alicloud_cms_metric_rule_template":                   resourceAlicloudCmsMetricRuleTemplate(),
+			"alicloud_iot_device_group":                           resourceAlicloudIotDeviceGroup(),
+			"alicloud_express_connect_virtual_border_router":      resourceAlicloudExpressConnectVirtualBorderRouter(),
+			"alicloud_imm_project":                                resourceAlicloudImmProject(),
+			"alicloud_click_house_db_cluster":                     resourceAlicloudClickHouseDbCluster(),
+			"alicloud_direct_mail_domain":                         resourceAlicloudDirectMailDomain(),
+			"alicloud_bastionhost_host_group":                     resourceAlicloudBastionhostHostGroup(),
+			"alicloud_vpc_dhcp_options_set":                       resourceAlicloudVpcDhcpOptionsSet(),
+			"alicloud_alb_health_check_template":                  resourceAlicloudAlbHealthCheckTemplate(),
+			"alicloud_cdn_real_time_log_delivery":                 resourceAlicloudCdnRealTimeLogDelivery(),
+			"alicloud_click_house_account":                        resourceAlicloudClickHouseAccount(),
+			"alicloud_bastionhost_user_attachment":                resourceAlicloudBastionhostUserAttachment(),
+			"alicloud_direct_mail_mail_address":                   resourceAlicloudDirectMailMailAddress(),
+			"alicloud_dts_job_monitor_rule":                       resourceAlicloudDtsJobMonitorRule(),
+			"alicloud_database_gateway_gateway":                   resourceAlicloudDatabaseGatewayGateway(),
+			"alicloud_bastionhost_host":                           resourceAlicloudBastionhostHost(),
+			"alicloud_amqp_binding":                               resourceAlicloudAmqpBinding(),
+			"alicloud_slb_tls_cipher_policy":                      resourceAlicloudSlbTlsCipherPolicy(),
+			"alicloud_cloud_sso_directory":                        resourceAlicloudCloudSsoDirectory(),
+			"alicloud_bastionhost_host_account":                   resourceAlicloudBastionhostHostAccount(),
+			"alicloud_bastionhost_host_attachment":                resourceAlicloudBastionhostHostAttachment(),
 		},
-
 		ConfigureFunc: providerConfigure,
 	}
 }
@@ -857,7 +961,6 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	ecsRoleName := getProviderConfig(d.Get("ecs_role_name").(string), "ram_role_name")
 
 	config := &connectivity.Config{
-		SourceIp:             strings.TrimSpace(d.Get("source_ip").(string)),
 		AccessKey:            strings.TrimSpace(accessKey),
 		SecretKey:            strings.TrimSpace(secretKey),
 		EcsRoleName:          strings.TrimSpace(ecsRoleName),
@@ -868,6 +971,8 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 		Protocol:             d.Get("protocol").(string),
 		ClientReadTimeout:    d.Get("client_read_timeout").(int),
 		ClientConnectTimeout: d.Get("client_connect_timeout").(int),
+		SourceIp:             strings.TrimSpace(d.Get("source_ip").(string)),
+		SecurityTransport:    strings.TrimSpace(d.Get("security_transport").(string)),
 	}
 	token := getProviderConfig(d.Get("security_token").(string), "sts_token")
 	config.SecurityToken = strings.TrimSpace(token)
@@ -992,6 +1097,23 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 		config.RedisaEndpoint = strings.TrimSpace(endpoints["redisa"].(string))
 		config.GwsecdEndpoint = strings.TrimSpace(endpoints["gwsecd"].(string))
 		config.CloudphoneEndpoint = strings.TrimSpace(endpoints["cloudphone"].(string))
+		config.ScdnEndpoint = strings.TrimSpace(endpoints["scdn"].(string))
+		config.DataworkspublicEndpoint = strings.TrimSpace(endpoints["dataworkspublic"].(string))
+		config.HcsSgwEndpoint = strings.TrimSpace(endpoints["hcs_sgw"].(string))
+		config.CddcEndpoint = strings.TrimSpace(endpoints["cddc"].(string))
+		config.MscopensubscriptionEndpoint = strings.TrimSpace(endpoints["mscopensubscription"].(string))
+		config.SddpEndpoint = strings.TrimSpace(endpoints["sddp"].(string))
+		config.BastionhostEndpoint = strings.TrimSpace(endpoints["bastionhost"].(string))
+		config.SasEndpoint = strings.TrimSpace(endpoints["sas"].(string))
+		config.AlidfsEndpoint = strings.TrimSpace(endpoints["alidfs"].(string))
+		config.EhpcEndpoint = strings.TrimSpace(endpoints["ehpc"].(string))
+		config.EnsEndpoint = strings.TrimSpace(endpoints["ens"].(string))
+		config.IotEndpoint = strings.TrimSpace(endpoints["iot"].(string))
+		config.ImmEndpoint = strings.TrimSpace(endpoints["imm"].(string))
+		config.ClickhouseEndpoint = strings.TrimSpace(endpoints["clickhouse"].(string))
+		config.DtsEndpoint = strings.TrimSpace(endpoints["dts"].(string))
+		config.DgEndpoint = strings.TrimSpace(endpoints["dg"].(string))
+		config.CloudssoEndpoint = strings.TrimSpace(endpoints["cloudsso"].(string))
 		if endpoint, ok := endpoints["alidns"]; ok {
 			config.AlidnsEndpoint = strings.TrimSpace(endpoint.(string))
 		} else {
@@ -1027,7 +1149,11 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	}
 
 	if config.ConfigurationSource == "" {
-		sourceName := fmt.Sprintf("Default/%s:%s", config.AccessKey, strings.Trim(uuid.New().String(), "-"))
+		sourceAccessKey := config.AccessKey
+		if len(sourceAccessKey) > 25 {
+			sourceAccessKey = sourceAccessKey[:25]
+		}
+		sourceName := fmt.Sprintf("Default/%s:%s", sourceAccessKey, strings.Trim(uuid.New().String(), "-"))
 		if len(sourceName) > 64 {
 			sourceName = sourceName[:64]
 		}
@@ -1048,8 +1174,6 @@ var descriptions map[string]string
 
 func init() {
 	descriptions = map[string]string{
-		"source_ip": "The access key for API operations. You can retrieve this from the 'Security Management' section of the Alibaba Cloud console.",
-
 		"access_key": "The access key for API operations. You can retrieve this from the 'Security Management' section of the Alibaba Cloud console.",
 
 		"secret_key": "The secret key for API operations. You can retrieve this from the 'Security Management' section of the Alibaba Cloud console.",
@@ -1080,7 +1204,10 @@ func init() {
 
 		"client_read_timeout":    "The maximum timeout of the client read request.",
 		"client_connect_timeout": "The maximum timeout of the client connection server.",
-		"ecs_endpoint":           "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom ECS endpoints.",
+		"source_ip":              "The source ip for the assume role invoking.",
+		"security_transport":     "The security transport for the assume role invoking.",
+
+		"ecs_endpoint": "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom ECS endpoints.",
 
 		"rds_endpoint": "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom RDS endpoints.",
 
@@ -1228,6 +1355,40 @@ func init() {
 		"gwsecd_endpoint": "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom gwsecd endpoints.",
 
 		"cloudphone_endpoint": "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom cloudphone endpoints.",
+
+		"scdn_endpoint": "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom scdn endpoints.",
+
+		"dataworkspublic_endpoint": "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom dataworkspublic endpoints.",
+
+		"hcs_sgw_endpoint": "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom hcs_sgw endpoints.",
+
+		"cddc_endpoint": "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom cddc endpoints.",
+
+		"mscopensubscription_endpoint": "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom mscopensubscription endpoints.",
+
+		"sddp_endpoint": "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom sddp endpoints.",
+
+		"bastionhost_endpoint": "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom bastionhost endpoints.",
+
+		"sas_endpoint": "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom sas endpoints.",
+
+		"alidfs_endpoint": "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom alidfs endpoints.",
+
+		"ehpc_endpoint": "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom ehpc endpoints.",
+
+		"ens_endpoint": "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom ens endpoints.",
+
+		"iot_endpoint": "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom iot endpoints.",
+
+		"imm_endpoint": "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom imm endpoints.",
+
+		"clickhouse_endpoint": "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom clickhouse endpoints.",
+
+		"dts_endpoint": "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom dts endpoints.",
+
+		"dg_endpoint": "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom dg endpoints.",
+
+		"cloudsso_endpoint": "Use this to override the default endpoint URL constructed from the `region`. It's typically used to connect to custom cloudsso endpoints.",
 	}
 }
 
@@ -1272,6 +1433,114 @@ func endpointsSchema() *schema.Schema {
 		Optional: true,
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
+				"dg": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Default:     "",
+					Description: descriptions["dg_endpoint"],
+				},
+
+				"dts": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Default:     "",
+					Description: descriptions["dts_endpoint"],
+				},
+				"cloudsso": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Default:     "",
+					Description: descriptions["cloudsso_endpoint"],
+				},
+
+				"iot": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Default:     "",
+					Description: descriptions["iot_endpoint"],
+				},
+
+				"imm": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Default:     "",
+					Description: descriptions["imm_endpoint"],
+				},
+				"clickhouse": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Default:     "",
+					Description: descriptions["clickhouse_endpoint"],
+				},
+
+				"alidfs": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Default:     "",
+					Description: descriptions["alidfs_endpoint"],
+				},
+
+				"ens": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Default:     "",
+					Description: descriptions["ens_endpoint"],
+				},
+
+				"bastionhost": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Default:     "",
+					Description: descriptions["bastionhost_endpoint"],
+				},
+				"cddc": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Default:     "",
+					Description: descriptions["cddc_endpoint"],
+				},
+				"sddp": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Default:     "",
+					Description: descriptions["sddp_endpoint"],
+				},
+
+				"mscopensubscription": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Default:     "",
+					Description: descriptions["mscopensubscription_endpoint"],
+				},
+
+				"sas": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Default:     "",
+					Description: descriptions["sas_endpoint"],
+				},
+
+				"ehpc": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Default:     "",
+					Description: descriptions["ehpc_endpoint"],
+				},
+
+				"dataworkspublic": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Default:     "",
+					Description: descriptions["dataworkspublic_endpoint"],
+				},
+
+				"hcs_sgw": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Default:     "",
+					Description: descriptions["hcs_sgw_endpoint"],
+				},
+
 				"cloudphone": {
 					Type:        schema.TypeString,
 					Optional:    true,
@@ -1297,6 +1566,13 @@ func endpointsSchema() *schema.Schema {
 					Default:     "",
 					Description: descriptions["gwsecd_endpoint"],
 				},
+				"scdn": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Default:     "",
+					Description: descriptions["scdn_endpoint"],
+				},
+
 				"arms": {
 					Type:        schema.TypeString,
 					Optional:    true,
@@ -1833,6 +2109,23 @@ func endpointsToHash(v interface{}) int {
 	buf.WriteString(fmt.Sprintf("%s-", m["redisa"].(string)))
 	buf.WriteString(fmt.Sprintf("%s-", m["gwsecd"].(string)))
 	buf.WriteString(fmt.Sprintf("%s-", m["cloudphone"].(string)))
+	buf.WriteString(fmt.Sprintf("%s-", m["scdn"].(string)))
+	buf.WriteString(fmt.Sprintf("%s-", m["dataworkspublic"].(string)))
+	buf.WriteString(fmt.Sprintf("%s-", m["hcs_sgw"].(string)))
+	buf.WriteString(fmt.Sprintf("%s-", m["cddc"].(string)))
+	buf.WriteString(fmt.Sprintf("%s-", m["mscopensubscription"].(string)))
+	buf.WriteString(fmt.Sprintf("%s-", m["sddp"].(string)))
+	buf.WriteString(fmt.Sprintf("%s-", m["bastionhost"].(string)))
+	buf.WriteString(fmt.Sprintf("%s-", m["sas"].(string)))
+	buf.WriteString(fmt.Sprintf("%s-", m["alidfs"].(string)))
+	buf.WriteString(fmt.Sprintf("%s-", m["ehpc"].(string)))
+	buf.WriteString(fmt.Sprintf("%s-", m["ens"].(string)))
+	buf.WriteString(fmt.Sprintf("%s-", m["iot"].(string)))
+	buf.WriteString(fmt.Sprintf("%s-", m["imm"].(string)))
+	buf.WriteString(fmt.Sprintf("%s-", m["clickhouse"].(string)))
+	buf.WriteString(fmt.Sprintf("%s-", m["dts"].(string)))
+	buf.WriteString(fmt.Sprintf("%s-", m["dg"].(string)))
+	buf.WriteString(fmt.Sprintf("%s-", m["cloudsso"].(string)))
 	return hashcode.String(buf.String())
 }
 

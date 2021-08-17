@@ -61,9 +61,6 @@ func (s *PolarDBService) DescribePolarDBClusterAttribute(id string) (instance *p
 
 	addDebug(request.GetActionName(), raw, request.RpcRequest, request)
 	response, _ := raw.(*polardb.DescribeDBClusterAttributeResponse)
-	if len(response.DBClusterId) < 1 {
-		return nil, WrapErrorf(Error(GetNotFoundMessage("Cluster", id)), NotFoundMsg, ProviderERROR)
-	}
 
 	return response, nil
 }
@@ -530,13 +527,12 @@ func (s *PolarDBService) DescribePolarDBClusterEndpoint(id string) (*polardb.DBE
 	return &response.Items[0], nil
 }
 
-func (s *PolarDBService) DescribePolarDBClusterSSL(id string) (*polardb.Item, error) {
-	parts, err := ParseResourceId(id, 2)
+func (s *PolarDBService) DescribePolarDBClusterSSL(d *schema.ResourceData) (ssl *polardb.DescribeDBClusterSSLResponse, err error) {
+	parts, err := ParseResourceId(d.Id(), 2)
 	if err != nil {
 		return nil, WrapError(err)
 	}
 	dbClusterId := parts[0]
-	dbEndpointId := parts[1]
 
 	request := polardb.CreateDescribeDBClusterSSLRequest()
 	request.RegionId = s.client.RegionId
@@ -557,18 +553,8 @@ func (s *PolarDBService) DescribePolarDBClusterSSL(id string) (*polardb.Item, er
 		return nil
 	})
 	response, _ := raw.(*polardb.DescribeDBClusterSSLResponse)
-	if len(response.Items) < 1 {
-		return nil, nil
-	} else if len(response.Items) == 1 && response.Items[0].DBEndpointId == "" {
-		return &response.Items[0], nil
-	} else {
-		for _, item := range response.Items {
-			if item.DBEndpointId == dbEndpointId {
-				return &item, nil
-			}
-		}
-	}
-	return nil, nil
+
+	return response, nil
 }
 
 func (s *PolarDBService) DescribePolarDBDatabase(id string) (ds *polardb.Database, err error) {
