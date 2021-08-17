@@ -345,6 +345,7 @@ func resourceAlicloudDBInstance() *schema.Resource {
 				Optional:         true,
 				DiffSuppressFunc: kernelVersionDiffSuppressFunc,
 			},
+			// test
 			"target_minor_version": {
 				Type:             schema.TypeString,
 				Optional:         true,
