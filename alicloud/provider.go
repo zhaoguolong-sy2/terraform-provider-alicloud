@@ -1099,6 +1099,7 @@ func Provider() terraform.ResourceProvider {
 			"alicloud_ecd_desktop":                                          resourceAlicloudEcdDesktop(),
 			"alicloud_cloud_storage_gateway_express_sync":                   resourceAlicloudCloudStorageGatewayExpressSync(),
 			"alicloud_cloud_storage_gateway_express_sync_share_attachment":  resourceAlicloudCloudStorageGatewayExpressSyncShareAttachment(),
+			"alicloud_rds_clone_db_instance":                                resourceAlicloudRdsCloneDbInstance(),
 		},
 
 		ConfigureFunc: providerConfigure,
