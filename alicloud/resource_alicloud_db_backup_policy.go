@@ -167,6 +167,13 @@ func resourceAlicloudDBBackupPolicy() *schema.Resource {
 				Optional:         true,
 				DiffSuppressFunc: enableBackupLogDiffSuppressFunc,
 			},
+			"released_keep_policy": {
+				Type:         schema.TypeString,
+				ValidateFunc: validation.StringInSlice([]string{"None", "Lastest", "All"}, false),
+				Computed:     true,
+				Optional:     true,
+				Default:      "None",
+			},
 		},
 	}
 }
@@ -202,6 +209,7 @@ func resourceAlicloudDBBackupPolicyRead(d *schema.ResourceData, meta interface{}
 	d.Set("log_backup_retention_period", formatInt(object["LogBackupRetentionPeriod"]))
 	d.Set("local_log_retention_hours", formatInt(object["LocalLogRetentionHours"]))
 	d.Set("local_log_retention_space", formatInt(object["LocalLogRetentionSpace"]))
+	d.Set("released_keep_policy", object["ReleasedKeepPolicy"])
 	instance, err := rdsService.DescribeDBInstance(d.Id())
 	if err != nil {
 		if NotFoundError(err) {
