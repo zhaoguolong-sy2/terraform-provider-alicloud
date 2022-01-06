@@ -400,6 +400,21 @@ func resourceAlicloudDBInstance() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"upgrade_db_instance_major_version_precheck": {
+				Type:     schema.TypeString,
+				Optional: true,
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					if v, ok := d.GetOk("engine"); ok && v.(string) == "PostgreSQL" {
+						engineVersion := d.Get("engine_version").(string)
+						f1, _ := strconv.ParseFloat(engineVersion, 64)
+						f2, _ := strconv.ParseFloat(new, 64)
+						if f2 > f1 {
+							return false
+						}
+					}
+					return true
+				},
+			},
 		},
 	}
 }
@@ -1163,6 +1178,42 @@ func resourceAlicloudDBInstanceUpdate(d *schema.ResourceData, meta interface{}) 
 		if _, err := stateConf.WaitForState(); err != nil {
 			return WrapErrorf(err, IdMsg, d.Id())
 		}
+	}
+
+	if d.HasChange("upgrade_db_instance_major_version_precheck") {
+		action := "UpgradeDBInstanceMajorVersionPrecheck"
+		request := map[string]interface{}{
+			"RegionId":     client.RegionId,
+			"DBInstanceId": d.Id(),
+			"SourceIp":     client.SourceIp,
+		}
+		if v, ok := d.GetOk("upgrade_db_instance_major_version_precheck"); ok && v.(string) != "" {
+			request["TargetMajorVersion"] = v
+		}
+		var response map[string]interface{}
+		wait := incrementalWait(3*time.Second, 3*time.Second)
+		err = resource.Retry(d.Timeout(schema.TimeoutUpdate), func() *resource.RetryError {
+			response, err = conn.DoRequest(StringPointer(action), nil, StringPointer("POST"), StringPointer("2014-08-15"), StringPointer("AK"), nil, request, &util.RuntimeOptions{})
+			if err != nil {
+				if NeedRetry(err) {
+					wait()
+					return resource.RetryableError(err)
+				}
+				return resource.NonRetryableError(err)
+			}
+			return nil
+		})
+
+		if err != nil {
+			return WrapErrorf(err, DefaultErrorMsg, d.Id(), action, AlibabaCloudSdkGoERROR)
+		}
+		addDebug(action, response, request)
+		stateConf := BuildStateConf([]string{}, []string{"Success"}, d.Timeout(schema.TimeoutUpdate), 3*time.Second, rdsService.RdsUpgradeMajorVersionRefreshFunc(d.Id(), formatInt(response["TaskId"]), []string{"Deleting"}))
+		if _, err := stateConf.WaitForState(); err != nil {
+			return WrapErrorf(err, IdMsg, d.Id())
+		}
+
+		d.SetPartial("upgrade_db_instance_major_version_precheck")
 	}
 
 	d.Partial(false)
